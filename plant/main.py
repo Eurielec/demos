@@ -13,6 +13,6 @@ from modules import plant
 
 if __name__ == "__main__":
     load_dotenv()
-
+    print("STARTED")
     p = plant.Plant()
     p.loop(iteration_time=15)
