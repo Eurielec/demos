@@ -2,7 +2,9 @@
 
 ## Requirements
 
-This demo requires your laptop to have Bluetooth.
+- Bluetooth.
+- Linux. MacOS not compatible with bluepy.
+- `libgtk2.0-dev` installed for bluepy. You can do so by `sudo apt install libgtk2.0-dev`.
 
 ## Permissions
 

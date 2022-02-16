@@ -72,29 +72,29 @@ class Plant:
         if lecture["temperature"] > 28:
             tweet.append("🌡 It's hot in here 🥵 (it's %s °C)." %
                          lecture["temperature"])
-        if lecture['light'] < 700:
+        if lecture['light'] < 150 and abs(lecture['light'] - self.last_light) > 50:
             tweet.append(
                 "🌚 Did someone turn off the light? 🔦 (light at %s lux)." % lecture["light"])
-        if lecture['light'] - self.last_light > 200:
+        if lecture['light'] - self.last_light > 400:
             tweet.append("😎 Am I being flashed light at demos now? Hello guys! 👋 (light at %s lux)." %
                          lecture["light"])
         if lecture['light'] >= 2000 and self.last_light < 2000:
             tweet.append("💡 And there was light! Thanks for the sunshine ☀️ (light at %s lux)." %
                          lecture["light"])
-        if lecture['battery'] < 25:
+        if lecture['battery'] < 25 and self.last_battery != 0 and lecture['battery'] != 0:
             tweet.append("🔌 I'm running low on batteries! (battery at %s)." %
                          lecture["battery"])
         if lecture["conductivity"] < 67:
             tweet.append("🪴 My soil doesn't feel great. (fertility at %s µS/cm)." %
                          lecture["conductivity"])
         if len(tweet) == 0:
-            tweet.append("""
+            tweet.append(f"""
                 🌈 Everything is fine.\n
-                Moisture: %s\n
-                Light: %s\n
-                Temperature: %s\n
-                Fertility: %s\n
-                Battery: %s
+                Moisture: {lecture["moisture"]}\n
+                Light: {lecture["light"]}\n
+                Temperature: {lecture["temperature"]}\n
+                Fertility: {lecture["conductivity"]}\n
+                Battery: {lecture["battery"]}
                 """)
         tweet.append("#IamRoot #YoSoyRoot @Eurielec")
         tweet = "\n".join(tweet)
@@ -111,17 +111,18 @@ class Plant:
         self.update(lecture)
         return tweet
 
-    def loop(self, iteration_time=600):
-        # try:
-        while True:
-            tweet = self.run()
-            if tweet is None:
+    def loop(self, iteration_time=int(15 * 60 * 100)):
+        try:
+            while True:
+                tweet = self.run()
+                if tweet is None:
+                    logging.debug("Skipping iteration")
+                    continue
+                else:
+                    self.twitter.tweet(tweet)
+                logging.info("Next iteration in: %s %s",
+                             iteration_time/60/100, "min")
                 sleep(iteration_time)
-                logging.debug("Skipping iteration")
-                continue
-            else:
-                self.twitter.tweet(tweet)
-                sleep(iteration_time)
-        # except Exception as e:
-            # logging.error(e)
-            # logging.info("Closing")
+        except Exception as e:
+            logging.error(e)
+            logging.info("Closing")
