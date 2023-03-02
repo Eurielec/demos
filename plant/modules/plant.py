@@ -103,25 +103,20 @@ class Plant:
         return tweet
 
     def run(self):
-        print("A1")
         lecture = self.scan()
-        print("A2")
         if lecture is None:
             logging.warning("Lecture was empty")
             return None
         tweet = self.create_tweet(lecture)
         logging.debug(tweet)
         self.update(lecture)
-        print("A3")
         return tweet
 
     def loop(self, iteration_time=int(15 * 60 * 100)):
         try:
             while True:
                 try:
-                    print("A")
                     tweet = self.run()
-                    print("B")
                     if tweet is None:
                         logging.debug("Skipping iteration")
                         continue
